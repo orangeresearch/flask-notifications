@@ -25,15 +25,16 @@ from flask import Flask, render_template
 from redis import StrictRedis
 from gevent.pywsgi import WSGIServer
 
-from flask_celeryext import FlaskCeleryExt
+#from flask_celery import Celery
+from celery import Celery
 from flask_notifications import Notifications
 from flask_notifications.event import Event
 from flask_notifications.filters import *
 from flask_notifications.consumers.push.push_consumer import PushConsumer
-from flask_notifications.consumers.email.flaskemail_consumer \
-    import FlaskEmailConsumer
-from flask_notifications.consumers.email.flaskmail_consumer \
-    import FlaskMailConsumer
+#from flask_notifications.consumers.email.flaskemail_consumer \
+##    import FlaskEmailConsumer
+#from flask_notifications.consumers.email.flaskmail_consumer \
+#    import FlaskMailConsumer
 
 gevent.monkey.patch_all()
 
@@ -77,7 +78,25 @@ config = {
 
 app.config.update(config)
 
-celery = FlaskCeleryExt(app).celery
+def make_celery(app):
+    celery = Celery(
+            app.import_name,
+            backend=app.config['CELERY_RESULT_BACKEND'],
+            broker=app.config['CELERY_BROKER_URL']
+            )
+    celery.conf.update(app.config)
+
+    class ContextTask(celery.Task):
+        def __call__(self, *args, **kwargs):
+            with app.app_context():
+                return self.run(*args, **kwargs)
+
+    celery.Task = ContextTask
+
+    return celery
+
+
+celery = make_celery(app)
 redis = StrictRedis(host=redis_host)
 
 # Define our notifications extension
@@ -103,17 +122,17 @@ push_consumer = PushConsumer(backend, user_hub_id)
 user_hub.register_consumer(push_consumer)
 
 # Create two independent email consumers
-mail_consumer = FlaskMailConsumer.from_app(
-    app, default_email_account, [default_email_account]
-)
+#mail_consumer = FlaskMailConsumer.from_app(
+#    app, default_email_account, [default_email_account]
+#)
 
-email_consumer = FlaskEmailConsumer.from_app(
-    app, default_email_account, [default_email_account]
-)
+#email_consumer = FlaskEmailConsumer.from_app(
+#    app, default_email_account, [default_email_account]
+#)
 
 # Register one or more predefined consumers
-for consumer in (mail_consumer, email_consumer):
-    system_hub.register_consumer(consumer)
+#for consumer in (mail_consumer, email_consumer):
+#    system_hub.register_consumer(consumer)
 
 # Register filters for the hubs
 now = datetime.now()

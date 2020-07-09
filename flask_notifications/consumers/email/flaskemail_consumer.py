@@ -9,7 +9,7 @@
 
 """Email consumer using the Flask-Mail extension."""
 
-from flask.ext.email import EmailMessage, SMTPMail
+from flask_mail  import Message as EmailMessage, SMTPMail
 from flask_notifications.event import Event
 from flask_notifications.consumers.email.email_consumer import EmailConsumer
 

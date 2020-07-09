@@ -46,8 +46,9 @@ class EventHub:
 
             def apply_with_expiration_check(event):
                 print((str(event["expiration_datetime"])))
+                print(event.to_json())
                 return async_f.apply_async(
-                    (event.to_json(),),
+                    event_json=(event.to_json()),
                     expires=event["expiration_datetime"]
                 )
 
