@@ -82,7 +82,7 @@ class Notifications(object):
         """Send an event through to all the hubs."""
         def consume(hub):
             hub.consume(event)
-        map(consume, self._hubs.itervalues())
+        list(map(consume, iter(self._hubs.values())))
 
     def sse_notifier_for(self, hub_id):
         """Create a :class SseNotifier: listening to a hub."""

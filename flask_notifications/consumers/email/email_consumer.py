@@ -13,10 +13,8 @@ import abc
 from flask_notifications.consumers.consumer import Consumer
 
 
-class EmailConsumer(Consumer):
+class EmailConsumer(Consumer, metaclass=abc.ABCMeta):
     """Base class of an Email consumer."""
-
-    __metaclass__ = abc.ABCMeta
 
     def __init__(self, mail, sender=None, recipients=[]):
         """Initialize of the email dependency, which inherits Consumer.

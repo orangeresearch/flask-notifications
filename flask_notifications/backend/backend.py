@@ -12,10 +12,8 @@
 import abc
 
 
-class Backend(object):
+class Backend(object, metaclass=abc.ABCMeta):
     """Allows to publish, subscribe and listen to events."""
-
-    __metaclass__ = abc.ABCMeta
 
     def __init__(self, broker):
         """Initialise broker."""

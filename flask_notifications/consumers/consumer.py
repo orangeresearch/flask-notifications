@@ -12,14 +12,12 @@
 import abc
 
 
-class Consumer(object):
+class Consumer(object, metaclass=abc.ABCMeta):
     """A callable that performs an action when receives an event.
 
     A user can define his own hooks for each consumer. Two hooks
     are available: before and after consuming.
     """
-
-    __metaclass__ = abc.ABCMeta
 
     def __call__(self, event_json, *args, **kwargs):
         """Main logic of the consumer."""

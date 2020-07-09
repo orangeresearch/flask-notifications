@@ -12,7 +12,7 @@
 from abc import ABCMeta, abstractmethod
 
 
-class EventFilter(object):
+class EventFilter(object, metaclass=ABCMeta):
     """Filter that represents a certain condition for the events.
 
     One can compose event filters with the following bitwise operators:
@@ -20,8 +20,6 @@ class EventFilter(object):
         :method |: OR bitwise operator
         :method ^: XOR bitwise operator
     """
-
-    __metaclass__ = ABCMeta
 
     @abstractmethod
     def filter(self, event, *args, **kwargs):
